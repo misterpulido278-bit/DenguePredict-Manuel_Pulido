@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import os
 from pathlib import Path
 
 import joblib
@@ -21,7 +22,7 @@ from data_processing import (
 BASE_DIR = Path(__file__).resolve().parent
 MODEL_PATH = BASE_DIR / "models" / "model_bundle.joblib"
 app = Flask(__name__)
-app.secret_key = "proyecto-dengue-analitica-2026"
+app.secret_key = os.environ.get("SECRET_KEY", "proyecto-dengue-analitica-dev")
 
 
 def load_bundle() -> dict:
