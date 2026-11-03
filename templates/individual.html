@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Predicción individual{% endblock %}
+{% block content %}
+<div class="page-heading"><p class="eyebrow">MODO INDIVIDUAL</p><h1>Evaluar un paciente</h1><p>Los códigos originales 1/2 se convierten internamente a Sí/No o 1/0 según corresponda.</p></div>
+<form method="post" class="form-card">
+    <label>Modelo
+        <select name="model">
+            {% for key, name in model_options.items() %}<option value="{{ key }}" {% if form_values.get('model', 'logistic') == key %}selected{% endif %}>{{ name }}</option>{% endfor %}
+        </select>
+    </label>
+    <div class="form-grid">
+        <fieldset><legend>Datos demográficos</legend>
+            <label>Edad <select name="AGE" required><option value="1">Menor de 6 años</option><option value="2" selected>Mayor de 6 años</option></select></label>
+            <label>Género <select name="GENDER" required><option value="1">Masculino</option><option value="2">Femenino</option></select></label>
+            <label>Días de fiebre <input type="number" name="DURATION_OF_FEVER" min="1" max="30" value="{{ form_values.get('DURATION_OF_FEVER', 3) }}" required></label>
+        </fieldset>
+        <fieldset><legend>Síntomas</legend>
+            {% for col, label in [('HEADACHE','Dolor de cabeza'),('MYALGIA','Mialgia'),('ABDOMINAL_PAIN','Dolor abdominal'),('RASH','Erupción'),('VOMITING','Vómito'),('BREATHLESSNESS','Dificultad respiratoria'),('BLEEDING','Sangrado'),('ORGANOMEGALY','Organomegalia'),('BP_AT_ADMISSION','Presión arterial alterada')] %}
+            <label>{{ label }} <select name="{{ col }}"><option value="1">Sí</option><option value="2" selected>No</option></select></label>
+            {% endfor %}
+        </fieldset>
+        <fieldset><legend>Laboratorios</legend>
+            {% for col, label, value in [('HB','Hemoglobina',12),('PCV','PCV',38),('LOWEST_WBC','WBC mínimo',3000),('HIGHEST_WBC','WBC máximo',6000),('PLATELET_COUNT','Plaquetas',100000),('ALT','ALT',30),('CREATININE','Creatinina',0.6)] %}
+            <label>{{ label }} <input type="number" step="any" name="{{ col }}" value="{{ form_values.get(col, value) }}" required></label>
+            {% endfor %}
+        </fieldset>
+        <fieldset><legend>Tratamiento</legend>
+            {% for col, label in [('IV_FLUIDS','Fluidos intravenosos'),('ANTIBIOTICS','Antibióticos'),('ANTIPYRETICS','Antipiréticos'),('STEROIDS','Esteroides')] %}
+            <label>{{ label }} <select name="{{ col }}"><option value="1">Sí</option><option value="2" selected>No</option></select></label>
+            {% endfor %}
+        </fieldset>
+    </div>
+    <button class="button" type="submit">Calcular predicción</button>
+</form>
+{% if result %}
+<section class="result {% if 'complicado' in result.label %}danger{% else %}success{% endif %}">
+    <p class="eyebrow">RESULTADO · {{ result.model_name }}</p><h2>{{ result.label }}</h2>
+    <p>Confianza de la predicción: <strong>{{ "%.2f"|format(result.probability) }}%</strong></p>
+    <p>Probabilidad estimada de dengue complicado: <strong>{{ "%.2f"|format(result.complicated_probability) }}%</strong></p>
+</section>
+{% endif %}
+{% endblock %}

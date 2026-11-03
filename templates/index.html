@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Inicio | DenguePredict{% endblock %}
+{% block content %}
+<section class="hero">
+    <div>
+        <p class="eyebrow">PROYECTO FINAL · ANALÍTICA DE DATOS</p>
+        <h1>Predicción de complicaciones en dengue pediátrico</h1>
+        <p>Utiliza dos modelos de clasificación para estimar si un caso corresponde a dengue no complicado o dengue complicado.</p>
+        <div class="actions">
+            <a class="button" href="{{ url_for('individual') }}">Probar un paciente</a>
+            <a class="button secondary" href="{{ url_for('batch') }}">Analizar un archivo</a>
+        </div>
+    </div>
+    <div class="hero-card"><strong>Modelos disponibles</strong><span>Regresión logística</span><span>Red neuronal artificial</span></div>
+</section>
+<section class="cards">
+    <article class="card"><h2>Predicción individual</h2><p>Completa los datos clínicos de un paciente y recibe la clase predicha junto con su probabilidad.</p></article>
+    <article class="card"><h2>Predicción por lote</h2><p>Carga un CSV o Excel. Si incluye la columna GROUPS, también podrás consultar métricas y matriz de confusión.</p></article>
+    <article class="card"><h2>Limpieza aplicada</h2><p>Se eliminaron duplicados, columnas con demasiados nulos o casi constantes y se crearon variables clínicas derivadas.</p></article>
+</section>
+{% endblock %}
