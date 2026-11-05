@@ -1,22 +1,126 @@
-{% extends "base.html" %}
-{% block title %}Predicción por lote{% endblock %}
-{% block content %}
-<div class="page-heading"><p class="eyebrow">MODO POR LOTE</p><h1>Analizar múltiples pacientes</h1><p>Sube un archivo CSV o Excel con las columnas del dataset original. Para evaluar el modelo, conserva la columna GROUPS.</p></div>
-<form method="post" enctype="multipart/form-data" class="form-card compact-form">
-    <label>Modelo
-        <select name="model">{% for key, name in model_options.items() %}<option value="{{ key }}">{{ name }}</option>{% endfor %}</select>
-    </label>
-    <label>Archivo CSV o Excel <input type="file" name="file" accept=".csv,.xlsx,.xls" required></label>
-    <button class="button" type="submit">Procesar archivo</button>
-</form>
+{% extends "base.html" %} {% block title %}Predicción por lote · DenguePredict{%
+endblock %} {% block content %}
+<div class="tool-heading">
+  <div>
+    <div class="green-label"><span></span> MODO 02 · POR LOTE</div>
+    <h1>Analiza varios pacientes.</h1>
+    <p>Carga tu archivo y deja que el modelo encuentre los patrones.</p>
+  </div>
+  <div class="step-pill"><b>02</b><span>de 02</span></div>
+</div>
+<div class="batch-layout">
+  <form method="post" enctype="multipart/form-data" class="upload-card">
+    <div class="form-top">
+      <div>
+        <h2>Sube tus datos</h2>
+        <p>Admitimos archivos CSV y Excel.</p>
+      </div>
+      <div class="file-types"><b>CSV</b><b>XLSX</b></div>
+    </div>
+    <div class="model-select">
+      <label
+        >Modelo a utilizar<select name="model">
+          {% for key, name in model_options.items() %}
+          <option value="{{ key }}">{{ name }}</option>
+          {% endfor %}
+        </select></label
+      >
+    </div>
+    <label class="drop-zone"
+      ><input type="file" name="file" accept=".csv,.xlsx,.xls" required /><span
+        class="upload-icon"
+        >↑</span
+      ><strong>Arrastra tu archivo aquí</strong
+      ><small>o haz clic para buscarlo en tu equipo</small
+      ><em>Máximo recomendado: 10 MB</em></label
+    >
+    <button class="submit-button" type="submit">
+      Procesar archivo <span>→</span>
+    </button>
+  </form>
+  <aside class="batch-guide">
+    <div class="side-icon">▦</div>
+    <h3>Para obtener métricas</h3>
+    <p>
+      Incluye la columna <code>GROUPS</code> en tu archivo. Así podrás comparar
+      las predicciones con los valores reales.
+    </p>
+    <div class="column-example">
+      <span>GROUPS</span><span>AGE</span><span>HB</span><span>...</span>
+    </div>
+    <p class="small-copy">
+      Si no incluyes GROUPS, solo se mostrarán las predicciones.
+    </p>
+  </aside>
+</div>
 {% if result %}
-<section class="card"><h2>Resultados</h2><p>{{ result.rows }} registros procesados con {{ result.model_name }}.</p><a class="button secondary" href="{{ url_for('download_results') }}">Descargar predicciones CSV</a></section>
+<section class="results-header">
+  <div>
+    <div class="green-label"><span></span> ANÁLISIS COMPLETADO</div>
+    <h2>{{ result.rows }} registros procesados</h2>
+    <p>Modelo utilizado: <strong>{{ result.model_name }}</strong></p>
+  </div>
+  <a class="download-button" href="{{ url_for('download_results') }}"
+    >↓ Descargar CSV</a
+  >
+</section>
 {% if result.metrics %}
 <section class="metrics-grid">
-    {% for key, label in [('accuracy','Accuracy'),('precision','Precisión'),('recall','Recall'),('f1','F1-score')] %}<div class="metric"><span>{{ label }}</span><strong>{{ "%.3f"|format(result.metrics[key]) }}</strong></div>{% endfor %}
+  <div class="metric">
+    <span>ACCURACY</span
+    ><strong>{{ "%.3f"|format(result.metrics.accuracy) }}</strong>
+  </div>
+  <div class="metric">
+    <span>PRECISIÓN</span
+    ><strong>{{ "%.3f"|format(result.metrics.precision) }}</strong>
+  </div>
+  <div class="metric">
+    <span>RECALL</span
+    ><strong>{{ "%.3f"|format(result.metrics.recall) }}</strong>
+  </div>
+  <div class="metric">
+    <span>F1-SCORE</span><strong>{{ "%.3f"|format(result.metrics.f1) }}</strong>
+  </div>
 </section>
-<section class="card"><h2>Matriz de confusión</h2><table class="confusion"><tr><th></th><th>Pred. no complicado</th><th>Pred. complicado</th></tr><tr><th>Real no complicado</th><td>{{ result.metrics.matrix[0][0] }}</td><td>{{ result.metrics.matrix[0][1] }}</td></tr><tr><th>Real complicado</th><td>{{ result.metrics.matrix[1][0] }}</td><td>{{ result.metrics.matrix[1][1] }}</td></tr></table></section>
-{% else %}<div class="alert warning">El archivo no incluye GROUPS; se muestran predicciones, pero no se pueden calcular métricas.</div>{% endif %}
-<section class="card table-wrapper"><h2>Vista previa (máximo 100 filas)</h2>{{ result.table|safe }}</section>
+<section class="data-card">
+  <div class="data-card-heading">
+    <div>
+      <h2>Matriz de confusión</h2>
+      <p>Comparación entre valores reales y predichos</p>
+    </div>
+    <span class="matrix-legend"><i></i> Real <i></i> Predicción</span>
+  </div>
+  <table class="confusion">
+    <tr>
+      <th></th>
+      <th>Pred. no complicado</th>
+      <th>Pred. complicado</th>
+    </tr>
+    <tr>
+      <th>Real no complicado</th>
+      <td>{{ result.metrics.matrix[0][0] }}</td>
+      <td>{{ result.metrics.matrix[0][1] }}</td>
+    </tr>
+    <tr>
+      <th>Real complicado</th>
+      <td>{{ result.metrics.matrix[1][0] }}</td>
+      <td>{{ result.metrics.matrix[1][1] }}</td>
+    </tr>
+  </table>
+</section>
+{% else %}
+<div class="alert warning">
+  El archivo no incluye GROUPS; se muestran predicciones, pero no se pueden
+  calcular métricas.
+</div>
 {% endif %}
-{% endblock %}
+<section class="data-card table-wrapper">
+  <div class="data-card-heading">
+    <div>
+      <h2>Vista previa</h2>
+      <p>Primeros 100 registros del resultado</p>
+    </div>
+  </div>
+  {{ result.table|safe }}
+</section>
+{% endif %} {% endblock %}

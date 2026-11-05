@@ -1,21 +1,81 @@
-{% extends "base.html" %}
-{% block title %}Inicio | DenguePredict{% endblock %}
+{% extends "base.html" %} {% block title %}Inicio · DenguePredict{% endblock %}
 {% block content %}
-<section class="hero">
-    <div>
-        <p class="eyebrow">PROYECTO FINAL · ANALÍTICA DE DATOS</p>
-        <h1>Predicción de complicaciones en dengue pediátrico</h1>
-        <p>Utiliza dos modelos de clasificación para estimar si un caso corresponde a dengue no complicado o dengue complicado.</p>
-        <div class="actions">
-            <a class="button" href="{{ url_for('individual') }}">Probar un paciente</a>
-            <a class="button secondary" href="{{ url_for('batch') }}">Analizar un archivo</a>
-        </div>
+<section class="home-hero">
+  <div class="home-copy">
+    <div class="green-label"><span></span> ANALÍTICA CLÍNICA</div>
+    <h1>Decisiones más claras para cada <em>caso.</em></h1>
+    <p class="lead">
+      Una herramienta académica para estimar el riesgo de complicaciones en
+      pacientes pediátricos con dengue.
+    </p>
+    <div class="home-actions">
+      <a class="primary-button" href="{{ url_for('individual') }}"
+        >Comenzar predicción <b>→</b></a
+      >
     </div>
-    <div class="hero-card"><strong>Modelos disponibles</strong><span>Regresión logística</span><span>Red neuronal artificial</span></div>
+    <div class="model-note">
+      <span class="avatar-stack"><i>LR</i><i>NN</i></span
+      ><span
+        >Dos modelos de machine learning<br /><strong
+          >Regresión logística + red neuronal</strong
+        ></span
+      >
+    </div>
+  </div>
+  <div class="home-visual">
+    <div class="visual-orbit orbit-one"></div>
+    <div class="visual-orbit orbit-two"></div>
+    <div class="visual-card">
+      <div class="visual-card-top">
+        <span class="mini-tag">PREDICCIÓN</span><span>● EN LÍNEA</span>
+      </div>
+      <div class="visual-number">89<span>%</span></div>
+      <p>nivel de confianza estimado</p>
+      <div class="progress-line"><span></span></div>
+      <div class="visual-bottom">
+        <span>Paciente analizado</span><strong>Resultado estable</strong>
+      </div>
+    </div>
+    <span class="leaf leaf-one">✦</span><span class="leaf leaf-two">✦</span>
+  </div>
 </section>
-<section class="cards">
-    <article class="card"><h2>Predicción individual</h2><p>Completa los datos clínicos de un paciente y recibe la clase predicha junto con su probabilidad.</p></article>
-    <article class="card"><h2>Predicción por lote</h2><p>Carga un CSV o Excel. Si incluye la columna GROUPS, también podrás consultar métricas y matriz de confusión.</p></article>
-    <article class="card"><h2>Limpieza aplicada</h2><p>Se eliminaron duplicados, columnas con demasiados nulos o casi constantes y se crearon variables clínicas derivadas.</p></article>
+
+<section class="intro-row">
+  <div>
+    <div class="green-label"><span></span> UNA HERRAMIENTA, DOS FORMAS</div>
+    <h2>Explora los datos<br />con confianza.</h2>
+  </div>
+  <p>
+    Ingresa la información de un paciente o carga un conjunto completo. Obtén
+    una predicción rápida y resultados fáciles de interpretar.
+  </p>
+</section>
+<section class="feature-grid">
+  <a class="feature-card featured" href="{{ url_for('individual') }}"
+    ><div class="feature-icon">↗</div>
+    <div>
+      <small>01 · ANÁLISIS DIRECTO</small>
+      <h3>Predicción individual</h3>
+      <p>Completa un formulario clínico y conoce la clasificación estimada.</p>
+    </div>
+    <strong class="arrow">→</strong></a
+  >
+  <a class="feature-card" href="{{ url_for('batch') }}"
+    ><div class="feature-icon pale">▦</div>
+    <div>
+      <small>02 · ANÁLISIS MASIVO</small>
+      <h3>Predicción por lote</h3>
+      <p>Sube un archivo CSV o Excel y revisa sus métricas.</p>
+    </div>
+    <strong class="arrow">→</strong></a
+  >
+  <div class="feature-card info-card">
+    <div class="feature-icon pale">✓</div>
+    <div>
+      <small>PROCESAMIENTO</small>
+      <h3>Datos preparados</h3>
+      <p>Variables limpias, escaladas y listas para el modelo.</p>
+    </div>
+  </div>
 </section>
 {% endblock %}

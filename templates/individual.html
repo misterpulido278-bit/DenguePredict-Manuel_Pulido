@@ -1,42 +1,28 @@
 {% extends "base.html" %}
-{% block title %}Predicción individual{% endblock %}
+{% block title %}Predicción individual · DenguePredict{% endblock %}
 {% block content %}
-<div class="page-heading"><p class="eyebrow">MODO INDIVIDUAL</p><h1>Evaluar un paciente</h1><p>Los códigos originales 1/2 se convierten internamente a Sí/No o 1/0 según corresponda.</p></div>
-<form method="post" class="form-card">
-    <label>Modelo
-        <select name="model">
-            {% for key, name in model_options.items() %}<option value="{{ key }}" {% if form_values.get('model', 'logistic') == key %}selected{% endif %}>{{ name }}</option>{% endfor %}
-        </select>
-    </label>
-    <div class="form-grid">
-        <fieldset><legend>Datos demográficos</legend>
-            <label>Edad <select name="AGE" required><option value="1">Menor de 6 años</option><option value="2" selected>Mayor de 6 años</option></select></label>
-            <label>Género <select name="GENDER" required><option value="1">Masculino</option><option value="2">Femenino</option></select></label>
-            <label>Días de fiebre <input type="number" name="DURATION_OF_FEVER" min="1" max="30" value="{{ form_values.get('DURATION_OF_FEVER', 3) }}" required></label>
-        </fieldset>
-        <fieldset><legend>Síntomas</legend>
-            {% for col, label in [('HEADACHE','Dolor de cabeza'),('MYALGIA','Mialgia'),('ABDOMINAL_PAIN','Dolor abdominal'),('RASH','Erupción'),('VOMITING','Vómito'),('BREATHLESSNESS','Dificultad respiratoria'),('BLEEDING','Sangrado'),('ORGANOMEGALY','Organomegalia'),('BP_AT_ADMISSION','Presión arterial alterada')] %}
-            <label>{{ label }} <select name="{{ col }}"><option value="1">Sí</option><option value="2" selected>No</option></select></label>
-            {% endfor %}
-        </fieldset>
-        <fieldset><legend>Laboratorios</legend>
-            {% for col, label, value in [('HB','Hemoglobina',12),('PCV','PCV',38),('LOWEST_WBC','WBC mínimo',3000),('HIGHEST_WBC','WBC máximo',6000),('PLATELET_COUNT','Plaquetas',100000),('ALT','ALT',30),('CREATININE','Creatinina',0.6)] %}
-            <label>{{ label }} <input type="number" step="any" name="{{ col }}" value="{{ form_values.get(col, value) }}" required></label>
-            {% endfor %}
-        </fieldset>
-        <fieldset><legend>Tratamiento</legend>
-            {% for col, label in [('IV_FLUIDS','Fluidos intravenosos'),('ANTIBIOTICS','Antibióticos'),('ANTIPYRETICS','Antipiréticos'),('STEROIDS','Esteroides')] %}
-            <label>{{ label }} <select name="{{ col }}"><option value="1">Sí</option><option value="2" selected>No</option></select></label>
-            {% endfor %}
-        </fieldset>
-    </div>
-    <button class="button" type="submit">Calcular predicción</button>
-</form>
-{% if result %}
-<section class="result {% if 'complicado' in result.label %}danger{% else %}success{% endif %}">
-    <p class="eyebrow">RESULTADO · {{ result.model_name }}</p><h2>{{ result.label }}</h2>
-    <p>Confianza de la predicción: <strong>{{ "%.2f"|format(result.probability) }}%</strong></p>
-    <p>Probabilidad estimada de dengue complicado: <strong>{{ "%.2f"|format(result.complicated_probability) }}%</strong></p>
-</section>
-{% endif %}
+<div class="tool-heading"><div><div class="green-label"><span></span> MODO 01 · INDIVIDUAL</div><h1>Evalúa un paciente.</h1><p>Completa los datos disponibles para generar una predicción.</p></div><div class="step-pill"><b>01</b><span>de 02</span></div></div>
+<div class="tool-layout">
+    <form method="post" class="prediction-form">
+        <div class="form-top"><div><h2>Datos del paciente</h2><p>Todos los campos marcados son necesarios.</p></div><div class="secure-badge">✦ Procesamiento seguro</div></div>
+        <div class="model-select"><label>Modelo a utilizar<select name="model">{% for key, name in model_options.items() %}<option value="{{ key }}" {% if form_values.get('model', 'logistic') == key %}selected{% endif %}>{{ name }}</option>{% endfor %}</select></label></div>
+        <div class="form-section"><div class="section-title"><span>01</span><div><h3>Información básica</h3><p>Características demográficas</p></div></div><div class="input-grid three">
+            <label>Edad<select name="AGE" required><option value="1">Menor de 6 años</option><option value="2" selected>Mayor de 6 años</option></select></label>
+            <label>Género<select name="GENDER" required><option value="1">Masculino</option><option value="2">Femenino</option></select></label>
+            <label>Días con fiebre<input type="number" name="DURATION_OF_FEVER" min="1" max="30" value="{{ form_values.get('DURATION_OF_FEVER', 3) }}" required></label>
+        </div></div>
+        <div class="form-section"><div class="section-title"><span>02</span><div><h3>Síntomas y signos</h3><p>Selecciona Sí o No para cada variable</p></div></div><div class="input-grid three">
+            {% for col, label in [('HEADACHE','Dolor de cabeza'),('MYALGIA','Mialgia'),('ABDOMINAL_PAIN','Dolor abdominal'),('RASH','Erupción'),('VOMITING','Vómito'),('BREATHLESSNESS','Dificultad respiratoria'),('BLEEDING','Sangrado'),('ORGANOMEGALY','Organomegalia'),('BP_AT_ADMISSION','Presión arterial alterada')] %}<label>{{ label }}<select name="{{ col }}"><option value="1">Sí</option><option value="2" selected>No</option></select></label>{% endfor %}
+        </div></div>
+        <div class="form-section"><div class="section-title"><span>03</span><div><h3>Resultados de laboratorio</h3><p>Valores registrados al ingreso</p></div></div><div class="input-grid three">
+            {% for col, label, value in [('HB','Hemoglobina',12),('PCV','PCV',38),('LOWEST_WBC','WBC mínimo',3000),('HIGHEST_WBC','WBC máximo',6000),('PLATELET_COUNT','Plaquetas',100000),('ALT','ALT',30),('CREATININE','Creatinina',0.6)] %}<label>{{ label }}<input type="number" step="any" name="{{ col }}" value="{{ form_values.get(col, value) }}" required></label>{% endfor %}
+        </div></div>
+        <div class="form-section"><div class="section-title"><span>04</span><div><h3>Tratamiento</h3><p>Intervenciones recibidas</p></div></div><div class="input-grid four">
+            {% for col, label in [('IV_FLUIDS','Fluidos IV'),('ANTIBIOTICS','Antibióticos'),('ANTIPYRETICS','Antipiréticos'),('STEROIDS','Esteroides')] %}<label>{{ label }}<select name="{{ col }}"><option value="1">Sí</option><option value="2" selected>No</option></select></label>{% endfor %}
+        </div></div>
+        <button class="submit-button" type="submit">Generar predicción <span>→</span></button>
+    </form>
+    <aside class="side-note"><div class="side-icon">✦</div><h3>¿Cómo funciona?</h3><p>El modelo analiza las variables clínicas ingresadas y estima la probabilidad de dengue complicado.</p><div class="side-divider"></div><div class="side-list"><span><b>01</b> Limpieza de datos</span><span><b>02</b> Análisis del modelo</span><span><b>03</b> Resultado interpretable</span></div></aside>
+</div>
+{% if result %}<section class="prediction-result {% if 'complicado' in result.label %}danger{% endif %}"><div><div class="green-label"><span></span> RESULTADO · {{ result.model_name }}</div><h2>{{ result.label }}</h2><p>Confianza de la predicción: <strong>{{ "%.2f"|format(result.probability) }}%</strong></p></div><div class="result-score"><strong>{{ "%.0f"|format(result.probability) }}<small>%</small></strong><span>confianza</span><div class="score-bar"><i style="width: {{ result.probability }}%"></i></div></div></section>{% endif %}
 {% endblock %}
