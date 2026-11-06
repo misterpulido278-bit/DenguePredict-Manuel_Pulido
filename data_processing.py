@@ -228,6 +228,10 @@ def prepare_prediction_data(
     df = standardize_columns(raw_df)
     df = encode_binary_columns(df)
     df = df.drop(columns=list(columns_to_drop), errors="ignore")
+    # Los formularios HTTP entregan todos los valores como texto. Convertimos
+    # antes de crear variables derivadas para evitar operaciones como
+    # ``HIGHEST_WBC - LOWEST_WBC`` entre cadenas.
+    df = df.apply(pd.to_numeric, errors="coerce")
     features = add_engineered_features(df.drop(columns=[TARGET_COLUMN], errors="ignore"))
     features = features.apply(pd.to_numeric, errors="coerce")
 
